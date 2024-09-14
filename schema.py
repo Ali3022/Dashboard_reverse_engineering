@@ -1,33 +1,34 @@
+# MongoDB schema creation (using PyMongo)
+
 from pymongo import MongoClient
+from datetime import datetime, timedelta
 
-def create_database():
-    # Connect to MongoDB (Replace 'localhost' and '27017' with your MongoDB URL if needed)
-    client = MongoClient('mongodb+srv://Test_User:testUser124@clustermdb.9ux7k.mongodb.net/?retryWrites=true&w=majority&appName=ClusterMDB')
-    # Create or connect to the database
-    db = client['web_analytics_dashboard']
+client = MongoClient('mongodb+srv://Test_User:testUser124@clustermdb.9ux7k.mongodb.net/?retryWrites=true&w=majority&appName=ClusterMDB')
+db = client['website_analytics']
 
-    # Drop existing collections if they exist to start fresh
-    db.sessions_data.drop()
-    db.traffic_sources.drop()
-    db.geo_locations.drop()
-    db.goal_data.drop()
+# Define schema for sessions, page views, and traffic concentration
 
-    # Create collections and define schema (No strict schema enforcement in MongoDB)
-    
-    # Sessions Data
-    db.create_collection('sessions_data')
-    
-    # Traffic Sources
-    db.create_collection('traffic_sources')
-    
-    # Geo Locations
-    db.create_collection('geo_locations')
-    
-    # Goal Data
-    db.create_collection('goal_data')
-    
-    print("Database and collections created successfully!")
+# Collection: sessions
+db.sessions.drop()  # Drop the collection if it already exists to start fresh
+sessions = db.sessions
 
-if __name__ == "__main__":
-    create_database()
+# Document schema
+session_data = {
+    'date': datetime.utcnow(),  # Timestamp for the session data
+    'sessions': 5139,
+    'page_views': 22495,
+    'users': 4520,
+    'website_visits': 20582
+}
+
+# Insert multiple documents with different timestamps for time series
+for i in range(30):
+    session_data['date'] = datetime.utcnow() - timedelta(days=i)
+    session_data['sessions'] += i * 10  # Incrementing for sample purposes
+    session_data['page_views'] += i * 50
+    session_data['users'] += i * 5
+    session_data['website_visits'] += i * 20
+    sessions.insert_one(session_data)
+
+print("Sample data for sessions inserted.")
 
