@@ -1,26 +1,33 @@
-import pymongo
 from pymongo import MongoClient
 
-# Connect to MongoDB
-client = MongoClient('mongodb+srv://Test_User:testUser124@clustermdb.9ux7k.mongodb.net/?retryWrites=true&w=majority&appName=ClusterMDB')
+def create_database():
+    # Connect to MongoDB (Replace 'localhost' and '27017' with your MongoDB URL if needed)
+    client = MongoClient('mongodb+srv://Test_User:testUser124@clustermdb.9ux7k.mongodb.net/?retryWrites=true&w=majority&appName=ClusterMDB')
+    # Create or connect to the database
+    db = client['web_analytics_dashboard']
 
-# Create or connect to the database
-db = client['web_analytics_db']
+    # Drop existing collections if they exist to start fresh
+    db.sessions_data.drop()
+    db.traffic_sources.drop()
+    db.geo_locations.drop()
+    db.goal_data.drop()
 
-# Create collections
-users_collection = db['users']
-sessions_collection = db['sessions']
-traffic_sources_collection = db['traffic_sources']
-goals_collection = db['goals']
+    # Create collections and define schema (No strict schema enforcement in MongoDB)
+    
+    # Sessions Data
+    db.create_collection('sessions_data')
+    
+    # Traffic Sources
+    db.create_collection('traffic_sources')
+    
+    # Geo Locations
+    db.create_collection('geo_locations')
+    
+    # Goal Data
+    db.create_collection('goal_data')
+    
+    print("Database and collections created successfully!")
 
-# Ensure indexes for optimized queries (you can add more indexes as needed)
-users_collection.create_index([('user_id', pymongo.ASCENDING)], unique=True)
-sessions_collection.create_index([('session_id', pymongo.ASCENDING)], unique=True)
-traffic_sources_collection.create_index([('source', pymongo.ASCENDING)])
-goals_collection.create_index([('goal_id', pymongo.ASCENDING)], unique=True)
-
-# Print confirmation
-print("Database schema has been created with collections for users, sessions, traffic sources, and goals.")
-
-client.close()
+if __name__ == "__main__":
+    create_database()
 

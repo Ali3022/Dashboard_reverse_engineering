@@ -1,113 +1,106 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from pymongo import MongoClient
+from datetime import datetime
 
+# Initialize Flask app
 app = Flask(__name__)
 
 # Connect to MongoDB
 client = MongoClient('mongodb+srv://Test_User:testUser124@clustermdb.9ux7k.mongodb.net/?retryWrites=true&w=majority&appName=ClusterMDB')
-db = client['web_analytics_db']
-sessions_collection = db['sessions']
-goals_collection = db['goals']
-traffic_sources_collection = db['traffic_sources']
+db = client['web_analytics_dashboard']
 
-# Aggregation Pipeline: Total Sessions
-def get_total_sessions_pipeline():
+def aggregate_total_sessions_and_users(start_date, end_date):
     pipeline = [
         {
-            '$group': {
-                '_id': None,
-                'total_sessions': { '$sum': 1 }  # Count all sessions
+            "$match": {
+                "date": {
+                    "$gte": start_date,
+                    "$lte": end_date
+                }
+            }
+        },
+        {
+            "$group": {
+                "_id": None,
+                "total_sessions": {"$sum": "$total_sessions"},
+                "total_users": {"$sum": "$users"},
+                "avg_bounce_rate": {"$avg": "$bounce_rate"}
             }
         }
     ]
-    result = list(sessions_collection.aggregate(pipeline))
-    return result[0]['total_sessions'] if result else 0
+    
+    result = list(db.sessions_data.aggregate(pipeline))
+    
+    if result:
+        return result[0]
+    else:
+        return {"total_sessions": 0, "total_users": 0, "avg_bounce_rate": 0}
 
-# Aggregation Pipeline: Average Bounce Rate
-def get_bounce_rate_pipeline():
+# Sessions and Users endpoint
+@app.route('/api/sessions_users', methods=['GET'])
+def get_sessions_users():
+    start_date = request.args.get('start_date', '2023-11-01')
+    end_date = request.args.get('end_date', '2023-11-10')
+    
+    start_date = datetime.strptime(start_date, '%Y-%m-%d')
+    end_date = datetime.strptime(end_date, '%Y-%m-%d')
+    
+    result = aggregate_total_sessions_and_users(start_date, end_date)
+    return jsonify(result), 200
+
+# Traffic Sources endpoint
+def aggregate_traffic_sources():
     pipeline = [
         {
-            '$group': {
-                '_id': None,
-                'avg_bounce_rate': { '$avg': '$bounce_rate' }
+            "$group": {
+                "_id": "$source_name",
+                "percentage": {"$avg": "$percentage"}
             }
         }
     ]
-    result = list(sessions_collection.aggregate(pipeline))
-    return result[0]['avg_bounce_rate'] if result else 0
+    
+    result = list(db.traffic_sources.aggregate(pipeline))
+    return result if result else []
 
-# Aggregation Pipeline: Traffic Sources
-def get_traffic_sources_pipeline():
-    pipeline = [
-        {
-            '$group': {
-                '_id': '$traffic_source',
-                'session_count': { '$sum': 1 }
-            }
-        }
-    ]
-    result = list(sessions_collection.aggregate(pipeline))
-    return [{'source': r['_id'], 'sessions': r['session_count']} for r in result]
-
-# Aggregation Pipeline: Goal Conversion Rate
-def get_goal_conversion_rate_pipeline():
-    pipeline = [
-        {
-            '$group': {
-                '_id': None,
-                'goal_conversion_rate': { '$avg': '$conversion_rate' }
-            }
-        }
-    ]
-    result = list(goals_collection.aggregate(pipeline))
-    return result[0]['goal_conversion_rate'] if result else 0
-
-# Aggregation Pipeline: Goal Completion Count
-def get_goal_completion_pipeline():
-    pipeline = [
-        {
-            '$group': {
-                '_id': None,
-                'total_goals': { '$sum': 1 }
-            }
-        }
-    ]
-    result = list(goals_collection.aggregate(pipeline))
-    return result[0]['total_goals'] if result else 0
-
-
-# Flask API Endpoints
-
-# Route: Get Total Sessions
-@app.route('/api/total_sessions', methods=['GET'])
-def get_total_sessions():
-    total_sessions = get_total_sessions_pipeline()
-    return jsonify({'total_sessions': total_sessions})
-
-# Route: Get Average Bounce Rate
-@app.route('/api/bounce_rate', methods=['GET'])
-def get_bounce_rate():
-    avg_bounce_rate = get_bounce_rate_pipeline()
-    return jsonify({'avg_bounce_rate': avg_bounce_rate})
-
-# Route: Get Traffic Sources Breakdown
 @app.route('/api/traffic_sources', methods=['GET'])
 def get_traffic_sources():
-    traffic_sources = get_traffic_sources_pipeline()
-    return jsonify({'traffic_sources': traffic_sources})
+    result = aggregate_traffic_sources()
+    return jsonify(result), 200
 
-# Route: Get Goal Conversion Rate
-@app.route('/api/goal_conversion_rate', methods=['GET'])
-def get_goal_conversion_rate():
-    goal_conversion_rate = get_goal_conversion_rate_pipeline()
-    return jsonify({'goal_conversion_rate': goal_conversion_rate})
+# Goal Data endpoint
+def aggregate_goal_data(start_date, end_date):
+    pipeline = [
+        {
+            "$match": {
+                "date": {
+                    "$gte": start_date,
+                    "$lte": end_date
+                }
+            }
+        },
+        {
+            "$group": {
+                "_id": None,
+                "total_goal_completion": {"$sum": "$goal_completion"},
+                "total_goal_value": {"$sum": "$goal_value"},
+                "avg_conversion_rate": {"$avg": "$conversion_rate"}
+            }
+        }
+    ]
+    
+    result = list(db.goal_data.aggregate(pipeline))
+    return result[0] if result else {"total_goal_completion": 0, "total_goal_value": 0, "avg_conversion_rate": 0}
 
-# Route: Get Goal Completion Count
-@app.route('/api/goal_completion', methods=['GET'])
-def get_goal_completion():
-    goal_completion = get_goal_completion_pipeline()
-    return jsonify({'goal_completion': goal_completion})
-
+@app.route('/api/goals', methods=['GET'])
+def get_goal_data():
+    start_date = request.args.get('start_date', '2023-11-01')
+    end_date = request.args.get('end_date', '2023-11-10')
+    
+    start_date = datetime.strptime(start_date, '%Y-%m-%d')
+    end_date = datetime.strptime(end_date, '%Y-%m-%d')
+    
+    result = aggregate_goal_data(start_date, end_date)
+    return jsonify(result), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
