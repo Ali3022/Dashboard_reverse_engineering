@@ -1,13 +1,13 @@
 **Part 2: Functional Element Analysis**
 
 1. **KPI Boxes**:
-   - Fields required for KPI boxes include Sessions (Integer), Page Views (Integer), Users (String), and Website Visits (Integer).
-   - These metrics could change over time, so a Date field is also needed. Comparisons could be made by calculating the percentage change over a selected period.
+   - Fields might include sessions (integer), page views (integer), users (integer), website visits (integer).
+   - These metrics may be updated in real-time or at regular intervals. Comparisons to previous periods are often presented.
 
 2. **Graphs and Charts**:
-   - To render the charts, Date, Sessions, Bounce Rate (Percentage), and Traffic Sources (String) fields are needed.
-   - The X-axis typically represents the Date, while the Y-axis represents the metric (Sessions, Bounce Rate). Legends correspond to Traffic Sources.
+   - Data fields might include date (date), sessions (integer), bounce rate (percentage), traffic sources (string).
+   - Each chart should have clearly labeled axes, legends, and data points.
 
 3. **Filters and Controls**:
-   - Filters need Date, Services (String), and Posts (String) fields.
-   - The filters interact with the data in real-time, updating the charts and KPIs based on the selected values.
+   - Filters could include date range, services (string), posts (string).
+   - The dashboard should update dynamically when filters are applied, providing real-time data insights.

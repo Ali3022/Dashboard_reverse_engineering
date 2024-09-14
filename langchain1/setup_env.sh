@@ -8,3 +8,7 @@ echo "image analysis done, moving to creating mongodb_schema!"
 python3 create_mongodb_schema.py
 
 echo "Image analysis completed, and MongoDB schema created successfully."
+
+python3 create_aggregate_pipeline.py
+
+echo "aggregate pipelines created successfully."
