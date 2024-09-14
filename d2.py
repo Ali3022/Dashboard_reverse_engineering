@@ -18,11 +18,12 @@ app.index_string = '''
         {%favicon%}
         {%scripts%}
         <style>
+            @import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
             body {
                 background: linear-gradient(to bottom, #f8ccd7, #f2a3b5);
                 margin: 0;
                 padding: 0;
-                font-family: 'Arial', sans-serif;
+                font-family: 'Open Sans', sans-serif;
             }
             .container {
                 padding: 20px;
@@ -59,6 +60,7 @@ app.index_string = '''
                 justify-content: center; /* Center content vertically */
                 align-items: center;
                 overflow: hidden; /* Hide overflow if content exceeds */
+                text-align: center; /* Center text horizontally */
             }
             .card h4 {
                 font-size: 22px;
@@ -70,6 +72,18 @@ app.index_string = '''
             .card .dash-graph {
                 flex-grow: 1;
                 width: 100%;
+            }
+            /* New classes for metric numbers and titles */
+            .metric-number {
+                font-size: 48px;
+                font-weight: bold;
+                margin: 0;
+                color: #333333;
+            }
+            .metric-title {
+                font-size: 18px;
+                margin: 0;
+                color: #666666;
             }
         </style>
     </head>
@@ -180,22 +194,26 @@ app.layout = dbc.Container([
         ], className="card"), width=4),
         
         dbc.Col(html.Div([
-            html.H4(f"Goal Conversion Rate: {goal_conversion_rate:.2f}%")
+            html.H1(f"{goal_conversion_rate:.2f}%", className="metric-number"),
+            html.P("Goal Conversion Rate", className="metric-title")
         ], className="card"), width=4),
     ], style={'margin-bottom': '30px'}),
     
     # Row 5: Previous Period Metrics
     dbc.Row([
         dbc.Col(html.Div([
-            html.H4("Total Sessions: 67,730 (2.1% increase)"),
+            html.H1("67,730", className="metric-number"),
+            html.P("Total Sessions (2.1% increase)", className="metric-title")
         ], className="card"), width=4),
         
         dbc.Col(html.Div([
-            html.H4("Users: 51,790 (1.7% increase)"),
+            html.H1("51,790", className="metric-number"),
+            html.P("Users (1.7% increase)", className="metric-title")
         ], className="card"), width=4),
         
         dbc.Col(html.Div([
-            html.H4("Bounce Rate: 47% (15% improvement)"),
+            html.H1("47%", className="metric-number"),
+            html.P("Bounce Rate (15% improvement)", className="metric-title")
         ], className="card"), width=4),
     ])
 ], fluid=True)
