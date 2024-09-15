@@ -1,5 +1,6 @@
 import json
 import os
+import re
 from pymongo import MongoClient
 from langchain.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
@@ -45,14 +46,28 @@ def get_collection_schema(collection_name):
     schema["fields"] = extract_fields(sample_document)
     return schema
 
+def extract_json_from_response(response_text):
+    """
+    Extract valid JSON array from the response text by identifying the first valid JSON object or array.
+    """
+    json_match = re.search(r'(\[.*\])', response_text, re.DOTALL)
+    if json_match:
+        return json_match.group(1)
+    return None
+
 def generate_aggregation_pipeline(collection_name, collection_schema):
     prompt_template = PromptTemplate(
         input_variables=["collection_name", "collection_schema"],
         template="""
 Based on the following MongoDB collection schema, generate an aggregation pipeline that provides useful insights into the data.
+If any string fields contain date information (for example, fields with names like 'created_at', 'date', 'timestamp', etc.),
+convert these string fields into MongoDB `Date` type using `$dateFromString` **only if they are not already of type `Date`**.
+If a field is already of `Date` type, do not attempt to convert it again.
+
 - Collection Name: {collection_name}
 - Return the aggregation pipeline as a **valid JSON array** of pipeline stages.
 - Do not include any additional text outside of the JSON array.
+
 Collection Schema:
 {collection_schema}
         """
@@ -75,12 +90,19 @@ Collection Schema:
 
     response_text = response.content if hasattr(response, 'content') else response
 
+    # Extract JSON array from the response text
+    json_pipeline = extract_json_from_response(response_text)
+    if not json_pipeline:
+        print(f"Error: No valid JSON pipeline found in response for {collection_name}.")
+        print("Response was:", response_text)
+        return None
+
     # Parse the JSON pipeline
     try:
-        pipeline = json.loads(response_text)
+        pipeline = json.loads(json_pipeline)
     except json.JSONDecodeError as e:
         print(f"Error parsing aggregation pipeline for {collection_name}:", e)
-        print("Response was:", response_text)
+        print("Response was:", json_pipeline)
         return None
 
     return pipeline

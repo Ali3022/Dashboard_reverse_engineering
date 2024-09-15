@@ -1,13 +1,28 @@
-**Part 2: Functional Element Analysis**
+Functional Element Analysis
 
 1. **KPI Boxes**:
-   - Fields might include sessions (integer), page views (integer), users (integer), website visits (integer).
-   - These metrics may be updated in real-time or at regular intervals. Comparisons to previous periods are often presented.
+   - **Required Fields**: 
+     - **Sessions**: Integer, indicating how many sessions were recorded.
+     - **Page Views**: Integer, total number of page views.
+     - **Users**: Integer, total number of unique users.
+     - **Website Visits**: Integer, number of different visits.
+   - **Dynamic Changes**: Metrics should show percentage change compared to previous periods, requiring historical data comparison functionality.
 
 2. **Graphs and Charts**:
-   - Data fields might include date (date), sessions (integer), bounce rate (percentage), traffic sources (string).
-   - Each chart should have clearly labeled axes, legends, and data points.
+   - **Data Needed**:
+     - **For Line Charts (Page Views)**:
+       - **Date**: Date field for x-axis.
+       - **Page Views Sessions**: Number of page views over time as y-axis data points.
+     - **For Bar Charts (Web Traffic Concentration)**:
+       - **Months**: Categorical field representing each month.
+       - **Sessions and Page Views**: Numeric values to gauge traffic concentration.
+   - **Axes/Legends**: Each chart should clearly define axes for interpreting trends accurately, with legends identifying different data series (sessions vs. page views).
 
 3. **Filters and Controls**:
-   - Filters could include date range, services (string), posts (string).
-   - The dashboard should update dynamically when filters are applied, providing real-time data insights.
+   - **Dynamic Filtering Fields**:
+     - **Date Range Filter**: Date type to select custom ranges.
+     - **Services Filter**: String data type for different service categories.
+     - **Posts Filter**: String to categorize types of posts or content.
+   - **Interactivity**: Filters should dynamically update visual elements in real-time, reflecting changes based on selections (contingent on backend data management). 
+
+This analysis underscores the structural, visual, and functional components of the dashboard effectively, vital for understanding its design and usage.

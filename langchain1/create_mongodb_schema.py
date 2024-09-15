@@ -88,7 +88,7 @@ Image Analysis:
             "OpenAI API key not found in environment variable 'OPENAI_API_KEY'."
         )
 
-    llm = ChatOpenAI(openai_api_key=api_key, model_name="gpt-4")
+    llm = ChatOpenAI(openai_api_key=api_key, model_name="gpt-4o-mini")
 
     # Create a chain using the new syntax
     chain = prompt_template | llm
