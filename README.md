@@ -42,7 +42,8 @@ To get the project running locally, follow these steps:
 2. Install the required dependencies:
    ```bash
    pip install -r requirements.txt
-3. Set up and run the MongoDB instance (ensure it's running on the default port or adjust accordingly).
-4. run the setup script:
+3. Set up and run the MongoDB instance and modify the placeholder client call. (ensure it's running on the default port or adjust accordingly).
+4. Setup your OpenAI Credentials
+5. run the setup script:
 ```bash
 ./setup_env.sh
