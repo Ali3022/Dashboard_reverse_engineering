@@ -36,7 +36,7 @@ To get the project running locally, follow these steps:
 1. Clone the repository:
    ```bash
    git clone https://github.com/yourusername/dashboard-reverse-engineering.git
-   cd dashboard-reverse-engineering
+   cd dashboard-reverse-engineering/langchain1
 2. Install the required dependencies:
    ```bash
    pip install -r requirements.txt
