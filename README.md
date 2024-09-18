@@ -1,5 +1,3 @@
-# Dashboard Reverse Engineering
-
 This project is a reverse-engineered web analytics dashboard. The goal is to replicate any given dashboard from an image using **Dash**, **Plotly**, and **Flask API** with dynamic data from a **MongoDB** backend. This project is focused on creating a real-time, interactive dashboard in a matter of seconds from a simple image.
 
 ## Project Overview
@@ -45,5 +43,12 @@ To get the project running locally, follow these steps:
 3. Set up and run the MongoDB instance and modify the placeholder client call. (ensure it's running on the default port or adjust accordingly).
 4. Setup your OpenAI Credentials
 5. run the setup script:
-```bash
-./setup_env.sh
+   ```bash
+   ./setup_env.sh
+
+## Sample Image: Before vs After
+
+![image](https://github.com/user-attachments/assets/09c13c5c-6ef7-453b-add0-fe8e9e981b6b)
+
+![image](https://github.com/user-attachments/assets/63094fac-0276-42c5-95d9-b61156de7c74)
+
